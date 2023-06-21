@@ -17,53 +17,59 @@ public class Mantenimiento {
     private List<Categoria> LstCategorias = new ArrayList<>();
     private List<Ingreso> LstIngreso = new ArrayList<>();
     private List<Egreso> LstEgreso = new ArrayList<>();
-    private int counter = 0;
+    private int counterConcepto = 1;
+    private int counterCategoria = 1;
+    private int counterIngreso = 1;
+    private int counterEgreso = 1;
     private float saldo = 0.0f;
 
-    public Mantenimiento(Scanner scn) {
-        this.scn = scn;
+    public Mantenimiento() {
+        this.scn = new Scanner(System.in);
     }
 
     public void AgregarConcepto() {
+
         Concepto concpto = new Concepto();
-
-        System.out.println("Ingrese el nombre de concepto.");
-        concpto.setNombre(scn.next());
-        System.out.println("Ingrese 1 si es Ingreso, ingrese 2 si es egreso");
-        concpto.setTipo(scn.nextInt());
-
-        System.out.println("Ingrese el id de categoria correspondiente.");
+        System.out.println("\n\nLISTA DE CATEGORIAS:");
         for (Categoria cat : LstCategorias) {
+
             System.out.println("Id Categoria: " + cat.getCategoriaId() + " Nombre: " + cat.getNombre());
         }
+        System.out.println("\nIngrese el id de categoria correspondiente.");
         int categoriaId = scn.nextInt();
         concpto.setCategoriaId(categoriaId);
+        System.out.println("Ingrese el nombre de concepto.");
+        concpto.setNombre(scn.next());
+        System.out.println("Ingrese \n1-Ingreso \n2-egreso");
+        concpto.setTipo(scn.nextInt());
 
-        concpto.setConceptoId(counter);
-
-        counter++;
+        concpto.setConceptoId(counterConcepto);
+        counterConcepto++;
 
         LstConceptos.add(concpto);
     }
 
     public void AgregarCategoria() {
+        String categoria;
         Categoria newCategoria = new Categoria();
         System.out.println("Ingrese el nombre de la categoria.");
-        newCategoria.setNombre(scn.nextLine());
-        newCategoria.setCategoriaId(counter);
-        counter++;
+        categoria = scn.nextLine();
+        newCategoria.setNombre(categoria);
+        newCategoria.setCategoriaId(counterCategoria);
+        counterCategoria++;
 
         LstCategorias.add(newCategoria);
+
     }
 
     public void AgregarIngreso() {
         Ingreso newIngreso = new Ingreso();
-
+        System.out.println("\n\nLISTA DE CONCEPTOS:");
         for (Concepto concpto : LstConceptos) {
             System.out.println("Id Concepto: " + concpto.getConceptoId() + " Nombre: " + concpto.getNombre());
         }
 
-        System.out.println("Ingrese el id de concepto correspondiente:");
+        System.out.println("\n\nIngrese el id de concepto correspondiente:");
         newIngreso.setConceptoId(scn.nextInt());
 
         System.out.println("Ingrese el total");
@@ -74,20 +80,20 @@ public class Mantenimiento {
 
         Date fecha = new Date();
         newIngreso.setFecha(fecha);
-        newIngreso.setIngresoId(counter);
-        counter++;
+        newIngreso.setIngresoId(counterIngreso);
+        counterIngreso++;
 
         LstIngreso.add(newIngreso);
     }
 
     public void AgregarEgreso() {
         Egreso newEgreso = new Egreso();
-
+        System.out.println("\n\nLISTA DE CONCEPTOS:");
         for (Concepto concpto : LstConceptos) {
             System.out.println("Id Concepto: " + concpto.getConceptoId() + " Nombre: " + concpto.getNombre());
         }
 
-        System.out.println("Ingrese el id de concepto correspondiente:");
+        System.out.println("\n\nIngrese el id de concepto correspondiente:");
         newEgreso.setConceptoId(scn.nextInt());
 
         System.out.println("Ingrese el total");
@@ -97,8 +103,8 @@ public class Mantenimiento {
 
         Date fecha = new Date();
         newEgreso.setFecha(fecha);
-        newEgreso.setEgresoId(counter);
-        counter++;
+        newEgreso.setEgresoId(counterEgreso);
+        counterEgreso++;
 
         LstEgreso.add(newEgreso);
     }
@@ -111,23 +117,28 @@ public class Mantenimiento {
 
         int opcion = scn.nextInt();
 
-        switch (opcion) {
-            case 1:
-                // llamar metodo reporte gastos
-                break;
-            case 2:
-                // metodo de ingresos
-                break;
-            case 3:
-                // metodo ambos
-                break;
-            default:
-                System.out.println("Opcion no valida.");
-                break;
+        try {
+            switch (opcion) {
+                case 1:
+                    this.ReporteGastos();
+                    break;
+                case 2:
+                    this.ReporteIngresos();
+                    break;
+                case 3:
+                    this.ReporteGastos();
+                    this.ReporteIngresos();
+                    break;
+                default:
+                    System.out.println("Opcion no valida.");
+                    break;
+            }
+        } catch (Exception ex) {
+            System.out.println("Error: " + ex.getMessage());
         }
     }
 
-    public void ReporteGastos() throws Exception {
+    private void ReporteGastos() throws Exception {
         System.out.println("Ingrese la fecha de Inicio en formato dd/mm/yyyy");
         String fechaInicio = scn.nextLine();
         System.out.println("Ingrese la fecha de fin en formato dd/mm/yyyy");
@@ -136,7 +147,7 @@ public class Mantenimiento {
         Date inicio = new SimpleDateFormat("dd/mm/yyyy").parse(fechaInicio);
         Date fin = new SimpleDateFormat("dd/mm/yyyy").parse(fechaFin);
 
-        List<Egreso> LstGastos = LstEgreso.stream().filter(egr -> egr.getFecha().compareTo(inicio) > 0 && egr.getFecha().compareTo(fin) < 0 ).collect(Collectors.toList());
+        List<Egreso> LstGastos = LstEgreso.stream().filter(egr -> egr.getFecha().compareTo(inicio) > 0 && egr.getFecha().compareTo(fin) < 0).collect(Collectors.toList());
 
         Comparator<Egreso> comparador = new Comparator<Egreso>() {
             @Override
@@ -156,11 +167,11 @@ public class Mantenimiento {
             System.out.println("Fecha " + egr.getFecha());
             total += egr.getTotal();
         }
-        
+
         System.out.println("Total gastado: " + total);
     }
 
-    public void ReporteIngresos()throws Exception {
+    private void ReporteIngresos() throws Exception {
         System.out.println("Ingrese la fecha de Inicio en formato dd/mm/yyyy");
         String fechaInicio = scn.nextLine();
         System.out.println("Ingrese la fecha de fin en formato dd/mm/yyyy");
@@ -168,11 +179,11 @@ public class Mantenimiento {
 
         Date inicio = new SimpleDateFormat("dd/mm/yyyy").parse(fechaInicio);
         Date fin = new SimpleDateFormat("dd/mm/yyyy").parse(fechaFin);
-        
-        List<Ingreso> LstEngreso = LstIngreso.stream().filter(egr -> egr.getFecha().compareTo(inicio) > 0 && egr.getFecha().compareTo(fin) < 0 ).collect(Collectors.toList());
+
+        List<Ingreso> LstEngreso = LstIngreso.stream().filter(egr -> egr.getFecha().compareTo(inicio) > 0 && egr.getFecha().compareTo(fin) < 0).collect(Collectors.toList());
     }
-    
-    public Concepto GetConceptoById(int id) {
+
+    private Concepto GetConceptoById(int id) {
         for (Concepto c : LstConceptos) {
             if (c.getConceptoId() == id) {
                 return c;

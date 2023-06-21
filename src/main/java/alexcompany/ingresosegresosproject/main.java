@@ -5,10 +5,10 @@ import java.util.Scanner;
 public class main {
 
     public static void main(String[] args) {
+        int opcion;
+         Mantenimiento mantenimiento = new Mantenimiento();
         Scanner scn = new Scanner(System.in);
-        boolean salir = false;
-
-        while (salir) {
+        do {
             System.out.println("Ingrese el numero de opcion que desee usar:");
             System.out.println("1- Agregar catalogo de conceptos.");
             System.out.println("2- Agregar categoria.");
@@ -16,19 +16,35 @@ public class main {
             System.out.println("4- Agregar egreso.");
             System.out.println("5- Ver resumen");
             System.out.println("6- Salir.");
-            
-            int opcion = scn.nextInt();
-            
-            if(opcion == 6){
-                salir = true;
-                return;
+
+            opcion = scn.nextInt();
+
+            if (opcion == 6) {
+                break;
             }
-        }
+            EjecutarAccion(opcion,  mantenimiento);
+        } while (opcion != 6);
     }
-    
-    public void EjecutarAccion(int accion){
-        switch(accion){
+
+    public static void EjecutarAccion(int accion, Mantenimiento mantenimiento) {
+
+       
+        switch (accion) {
             case 1:
+                mantenimiento.AgregarConcepto();
+
+                break;
+            case 2:
+                mantenimiento.AgregarCategoria();
+                break;
+            case 3:
+                mantenimiento.AgregarIngreso();
+                break;
+            case 4:
+                mantenimiento.AgregarEgreso();
+                break;
+            case 5:
+                mantenimiento.VerResumen();
                 break;
             default:
                 System.out.println("Opcion no valida intentalo de nuevo.");
