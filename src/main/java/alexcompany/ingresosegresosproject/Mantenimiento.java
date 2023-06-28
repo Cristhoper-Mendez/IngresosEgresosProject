@@ -22,6 +22,9 @@ public class Mantenimiento {
     private int counterIngreso = 1;
     private int counterEgreso = 1;
     private float saldo = 0.0f;
+    //implementar
+    private float saldoIngresos = 0.0f;
+    private float saldoEngresos = 0.0f;
 
     public Mantenimiento() {
         this.scn = new Scanner(System.in);
@@ -29,24 +32,29 @@ public class Mantenimiento {
 
     public void AgregarConcepto() {
 
-        Concepto concpto = new Concepto();
-        System.out.println("\n\nLISTA DE CATEGORIAS:");
-        for (Categoria cat : LstCategorias) {
+        if (LstCategorias.isEmpty()) {
+            System.out.println("No se ha registrado ninguna Categoria");
+        } else {
+            Concepto concpto = new Concepto();
+            String nombre_concepto;
+            int tipo;
+            System.out.println("\n\nLISTA DE CATEGORIAS:");
+            System.out.println("Id Categoria:\t\tNombre: ");
+            for (Categoria cat : LstCategorias) {
+                System.out.println(cat.getCategoriaId() + "\t\t\t" + cat.getNombre());
+            }
+            System.out.println("\nIngrese el id de categoria correspondiente.");
+            int categoriaId = scn.nextInt();
+            concpto.setCategoriaId(categoriaId);
+            System.out.println("Ingrese la descripcion de concepto.");
+            nombre_concepto = scn.next();
+            concpto.setNombre(nombre_concepto);
 
-            System.out.println("Id Categoria: " + cat.getCategoriaId() + " Nombre: " + cat.getNombre());
+            concpto.setConceptoId(counterConcepto);
+            counterConcepto++;
+
+            LstConceptos.add(concpto);
         }
-        System.out.println("\nIngrese el id de categoria correspondiente.");
-        int categoriaId = scn.nextInt();
-        concpto.setCategoriaId(categoriaId);
-        System.out.println("Ingrese el nombre de concepto.");
-        concpto.setNombre(scn.next());
-        System.out.println("Ingrese \n1-Ingreso \n2-egreso");
-        concpto.setTipo(scn.nextInt());
-
-        concpto.setConceptoId(counterConcepto);
-        counterConcepto++;
-
-        LstConceptos.add(concpto);
     }
 
     public void AgregarCategoria() {
@@ -63,50 +71,69 @@ public class Mantenimiento {
     }
 
     public void AgregarIngreso() {
-        Ingreso newIngreso = new Ingreso();
-        System.out.println("\n\nLISTA DE CONCEPTOS:");
-        for (Concepto concpto : LstConceptos) {
-            System.out.println("Id Concepto: " + concpto.getConceptoId() + " Nombre: " + concpto.getNombre());
+        try {
+            Ingreso newIngreso = new Ingreso();
+            int idConcepto;
+            ListarConceptos();
+
+            System.out.println("\n\nIngrese el id de concepto correspondiente:");
+            idConcepto = scn.nextInt();
+            newIngreso.setConceptoId(idConcepto);
+
+            System.out.println("Ingrese el total");
+            float total = scn.nextFloat();
+            saldo += total;
+            newIngreso.setTotal(total);
+
+            System.out.println("Ingrese la fecha");
+            String fecha =LeerFechaValida();
+            Date fechaParseada = new SimpleDateFormat("dd/mm/yyyy").parse(fecha);
+            newIngreso.setFecha(fechaParseada);
+            newIngreso.setIngresoId(counterIngreso);
+            counterIngreso++;
+
+            LstIngreso.add(newIngreso);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
-
-        System.out.println("\n\nIngrese el id de concepto correspondiente:");
-        newIngreso.setConceptoId(scn.nextInt());
-
-        System.out.println("Ingrese el total");
-
-        float total = scn.nextFloat();
-        saldo += total;
-        newIngreso.setTotal(total);
-
-        Date fecha = new Date();
-        newIngreso.setFecha(fecha);
-        newIngreso.setIngresoId(counterIngreso);
-        counterIngreso++;
-
-        LstIngreso.add(newIngreso);
     }
 
     public void AgregarEgreso() {
-        Egreso newEgreso = new Egreso();
-        System.out.println("\n\nLISTA DE CONCEPTOS:");
-        for (Concepto concpto : LstConceptos) {
-            System.out.println("Id Concepto: " + concpto.getConceptoId() + " Nombre: " + concpto.getNombre());
+
+        try {
+            Egreso newEgreso = new Egreso();
+
+            ListarConceptos();
+            System.out.println("\n\nIngrese el id de concepto correspondiente:");
+            int idConcepto = scn.nextInt();
+            newEgreso.setConceptoId(idConcepto);
+
+            System.out.println("Ingrese el total");
+            float total = scn.nextFloat();
+            saldo -= total;
+            newEgreso.setTotal(total);
+
+            System.out.println("Ingrese la fecha");
+            String fecha = LeerFechaValida();
+            Date fechaParseada = new SimpleDateFormat("dd/mm/yyyy").parse(fecha);
+            newEgreso.setFecha(fechaParseada);
+            newEgreso.setEgresoId(counterEgreso);
+            counterEgreso++;
+
+            LstEgreso.add(newEgreso);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
+    }
 
-        System.out.println("\n\nIngrese el id de concepto correspondiente:");
-        newEgreso.setConceptoId(scn.nextInt());
-
-        System.out.println("Ingrese el total");
-        float total = scn.nextFloat();
-        saldo -= total;
-        newEgreso.setTotal(total);
-
-        Date fecha = new Date();
-        newEgreso.setFecha(fecha);
-        newEgreso.setEgresoId(counterEgreso);
-        counterEgreso++;
-
-        LstEgreso.add(newEgreso);
+    private void ListarConceptos() {
+        System.out.println("\n\nLISTA DE CONCEPTOS:");
+        System.out.println("Id concepto\t\tDescripcion\t\tCategoria");
+        Categoria categoria;
+        for (Concepto concpto : LstConceptos) {
+            categoria = LstCategorias.stream().filter(x -> x.getCategoriaId() == concpto.getCategoriaId()).findFirst().orElse(null);
+            System.out.println(concpto.getConceptoId() + "\t\t" + concpto.getNombre() + "\t\t" + categoria.getNombre());
+        }
     }
 
     public void VerResumen() {
@@ -139,11 +166,14 @@ public class Mantenimiento {
     }
 
     private void ReporteGastos() throws Exception {
-        System.out.println("Ingrese la fecha de Inicio en formato dd/mm/yyyy");
-        String fechaInicio = scn.nextLine();
-        System.out.println("Ingrese la fecha de fin en formato dd/mm/yyyy");
-        String fechaFin = scn.nextLine();
+ 
 
+       System.out.println("Fecha de Inicio:");
+        System.out.println("------------------------------------");
+        String fechaInicio = LeerFechaValida();
+        System.out.println("Ingrese la fecha de Fin");
+        System.out.println("------------------------------------");
+        String fechaFin = LeerFechaValida();
         Date inicio = new SimpleDateFormat("dd/mm/yyyy").parse(fechaInicio);
         Date fin = new SimpleDateFormat("dd/mm/yyyy").parse(fechaFin);
 
@@ -172,10 +202,12 @@ public class Mantenimiento {
     }
 
     private void ReporteIngresos() throws Exception {
-        System.out.println("Ingrese la fecha de Inicio en formato dd/mm/yyyy");
-        String fechaInicio = scn.nextLine();
-        System.out.println("Ingrese la fecha de fin en formato dd/mm/yyyy");
-        String fechaFin = scn.nextLine();
+        System.out.println("Fecha de Inicio:");
+        System.out.println("------------------------------------");
+        String fechaInicio = LeerFechaValida();
+        System.out.println("Ingrese la fecha de Fin");
+        System.out.println("------------------------------------");
+        String fechaFin = LeerFechaValida();
 
         Date inicio = new SimpleDateFormat("dd/mm/yyyy").parse(fechaInicio);
         Date fin = new SimpleDateFormat("dd/mm/yyyy").parse(fechaFin);
@@ -190,5 +222,15 @@ public class Mantenimiento {
             }
         }
         return null;
+    }
+     private  String LeerFechaValida() {
+        int dia, mes, año;
+         System.out.println("ingrese el dia (numeros)");
+         dia= scn.nextInt();
+         System.out.println("ingrese el mes (numeros)");
+         mes= scn.nextInt();
+         System.out.println("ingrese el año (numeros)");
+         año= scn.nextInt();
+        return String.format("%d/%d/%d", dia, mes,año) ;
     }
 }

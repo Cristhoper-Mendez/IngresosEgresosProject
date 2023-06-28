@@ -5,7 +5,6 @@ public class Concepto {
     int ConceptoId;
 
     String Nombre;
-    int Tipo;
     int CategoriaId;
 
     public int getConceptoId() {
@@ -30,14 +29,6 @@ public class Concepto {
 
     public void setNombre(String Nombre) {
         this.Nombre = Nombre;
-    }
-
-    public int getTipo() {
-        return Tipo;
-    }
-
-    public void setTipo(int Tipo) {
-        this.Tipo = Tipo;
     }
 
 }
