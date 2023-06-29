@@ -22,9 +22,18 @@ public class Mantenimiento {
     private int counterIngreso = 1;
     private int counterEgreso = 1;
     private float saldo = 0.0f;
-    //implementar
-    private float saldoIngresos = 0.0f;
-    private float saldoEngresos = 0.0f;
+    private Comparator<Egreso> comparadorEgreso = new Comparator<Egreso>() {
+        @Override
+        public int compare(Egreso o1, Egreso o2) {
+            return o1.getFecha().compareTo(o2.getFecha());
+        }
+    };
+    private Comparator<Ingreso> comparadorIngreso = new Comparator<Ingreso>() {
+        @Override
+        public int compare(Ingreso o1, Ingreso o2) {
+            return o1.getFecha().compareTo(o2.getFecha());
+        }
+    };
 
     public Mantenimiento() {
         this.scn = new Scanner(System.in);
@@ -86,7 +95,7 @@ public class Mantenimiento {
             newIngreso.setTotal(total);
 
             System.out.println("Ingrese la fecha");
-            String fecha =LeerFechaValida();
+            String fecha = LeerFechaValida();
             Date fechaParseada = new SimpleDateFormat("dd/mm/yyyy").parse(fecha);
             newIngreso.setFecha(fechaParseada);
             newIngreso.setIngresoId(counterIngreso);
@@ -166,9 +175,8 @@ public class Mantenimiento {
     }
 
     private void ReporteGastos() throws Exception {
- 
 
-       System.out.println("Fecha de Inicio:");
+        System.out.println("Fecha de Inicio:");
         System.out.println("------------------------------------");
         String fechaInicio = LeerFechaValida();
         System.out.println("Ingrese la fecha de Fin");
@@ -179,14 +187,7 @@ public class Mantenimiento {
 
         List<Egreso> LstGastos = LstEgreso.stream().filter(egr -> egr.getFecha().compareTo(inicio) > 0 && egr.getFecha().compareTo(fin) < 0).collect(Collectors.toList());
 
-        Comparator<Egreso> comparador = new Comparator<Egreso>() {
-            @Override
-            public int compare(Egreso o1, Egreso o2) {
-                return o1.getFecha().compareTo(o2.getFecha());
-            }
-        };
-
-        Collections.sort(LstGastos, comparador);
+        Collections.sort(LstGastos, comparadorEgreso);
 
         float total = 0.0f;
 
@@ -213,6 +214,20 @@ public class Mantenimiento {
         Date fin = new SimpleDateFormat("dd/mm/yyyy").parse(fechaFin);
 
         List<Ingreso> LstEngreso = LstIngreso.stream().filter(egr -> egr.getFecha().compareTo(inicio) > 0 && egr.getFecha().compareTo(fin) < 0).collect(Collectors.toList());
+
+        Collections.sort(LstEngreso, comparadorIngreso);
+
+        float total = 0.0f;
+
+        for (Ingreso igr : LstEngreso) {
+            Concepto concept = GetConceptoById(igr.getConceptoId());
+            System.out.println("Concepto " + concept.getNombre());
+            System.out.println("Total ingresado " + igr.getTotal());
+            System.out.println("Fecha " + igr.getFecha());
+            total += igr.getTotal();
+        }
+
+        System.out.println("Ingresos totales: " + total);
     }
 
     private Concepto GetConceptoById(int id) {
@@ -223,14 +238,15 @@ public class Mantenimiento {
         }
         return null;
     }
-     private  String LeerFechaValida() {
+
+    private String LeerFechaValida() {
         int dia, mes, año;
-         System.out.println("ingrese el dia (numeros)");
-         dia= scn.nextInt();
-         System.out.println("ingrese el mes (numeros)");
-         mes= scn.nextInt();
-         System.out.println("ingrese el año (numeros)");
-         año= scn.nextInt();
-        return String.format("%d/%d/%d", dia, mes,año) ;
+        System.out.println("ingrese el dia (numeros)");
+        dia = scn.nextInt();
+        System.out.println("ingrese el mes (numeros)");
+        mes = scn.nextInt();
+        System.out.println("ingrese el año (numeros)");
+        año = scn.nextInt();
+        return String.format("%d/%d/%d", dia, mes, año);
     }
 }
