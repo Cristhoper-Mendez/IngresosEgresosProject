@@ -33,6 +33,7 @@ Clase Principal( metodo main)
 ## Consideraciones
 Para ejecutar el programa se deben considerar lo siguiente:
 
+ - no usar espacios en las oraciones, si no que se debe usar guio bajo "_" debido a que esto podria generar errores
 - Es imprescindible agregar como minimo una categoria, para poder agregar un concepto
 - Cuando se ingresa la fecha es obligatorio introducir solo numeros.
 *
