@@ -15,6 +15,10 @@ Clase Principal( metodo main)
 - main
 
 ## ¿Como usar el programa? 
+
+<font color="red">¡ Importate leer consideraciones antes de usar el programa !</font >
+
+
 - Agregar una categoria
     - Agregar el tipo de categoria en formato alfanumerico
 -  Agregar un Concepto
